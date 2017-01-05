@@ -17,6 +17,7 @@
     "url": "https://github.com/ssmlee04/meanio-user/issues"
   },
   "dependencies": {
+    "async": "^2.1.4",
     "randomstring": "^1.1.5"
   },
   "devDependencies": {
@@ -24,18 +25,29 @@
     "babel-eslint": "^5.0.0-beta6",
     "bluebird": "^3.4.1",
     "crypto": "0.0.3",
+    "del": "^2.2.2",
     "eslint": "^1.10.3",
     "eslint-plugin-react": "^3.11.3",
     "express-session": "^1.14.2",
     "fs-extra": "^1.0.0",
     "lodash": "^4.13.1",
     "meanio": "git+https://github.com/ssmlee04/meanio-raml#master",
+    "meanio-uploads": "git+https://github.com/ssmlee04/meanio-uploads#master",
+    "meanio-zones": "git+https://github.com/ssmlee04/meanio-zones#master",
+    "mkdirp": "^0.5.1",
     "mocha": "^2.5.3",
     "mongoose": "4.4.16",
     "morgan": "^1.7.0",
+    "nodemailer": "^2.7.0",
+    "passport": "^0.2.1",
+    "passport-facebook-token": "^1.0.0",
+    "passport-google-oauth": "^1.0.0",
+    "passport-google-token": "^0.1.1",
+    "passport-local": "1.0.0",
     "path": "^0.12.7",
     "should": "^9.0.2",
-    "validator": "3.28.0"
+    "validator": "3.28.0",
+    "winston": "^2.3.0"
   },
   "homepage": "https://github.com/ssmlee04/meanio-user#readme"
 }

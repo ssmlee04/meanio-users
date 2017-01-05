@@ -11,7 +11,6 @@ var User = mongoose.model("User");
 var config = require("meanio").loadConfig();
 var Promise = require("bluebird");
 var _ = require("lodash")
-var Moniker = require("moniker");
 var randomstring = require("randomstring");
 
 module.exports = function(passport) {
@@ -111,10 +110,6 @@ module.exports = function(passport) {
       u.lon = req.body.lon
       u.lat = req.body.lat
       
-      var name = Moniker.choose() + "-" + Moniker.choose()
-      name = name.slice(name.indexOf("-") + 1)
-      u.nickname = name
-
       User.insertFromFacebook(u)
       .then(function(d) {
         return done(null, d);

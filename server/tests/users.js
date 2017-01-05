@@ -7,19 +7,24 @@
 var Promise = require('bluebird')
 var _ = require('lodash')
 var fs = require('fs-extra')
+var mkdirp = require('mkdirp')
 var path = require('path')
 var should = require('should')
 var randomstring = require('randomstring')
+var del = require('del')
 var mongoose = require('mongoose')
 var User = mongoose.model('User')
 var config = require('meanio').loadConfig()
 // var testutils = require(path.join(config.root, '/config/testutils'))
 // var utils = require(path.join(config.root, '/config/utils'))
-var genUser = function() {
-  return {
+
+var googleImgUrl = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_116x41dp.png'
+var genUser = function(info) {
+  return _.extend({
     name: randomstring.generate(),
+    password: randomstring.generate(20),
     email: randomstring.generate() + '@gmail.com'
-  }
+  }, info)
 }
 
 /**
@@ -40,7 +45,12 @@ describe('<Unit Test>', function() {
     before(function(done) {
       return Promise.resolve().delay(2000)
       .then(function() {
+        return mkdirp.sync(path.join(config.root, './public'))
+      }).then(function() {
         return Promise.cast(User.remove().exec())
+      }).then(function() {
+        var Zone = mongoose.model('Zone')
+        return Promise.cast(Zone.remove().exec())
       }).then(function() {
         var user = genUser()
         users.push(user)
@@ -84,6 +94,11 @@ describe('<Unit Test>', function() {
             d.salt.should.not.have.length(0)
             savedusers.push(d)
           })
+        }, {concurrency: 1}).then(function() {
+          return Promise.cast(User.find({email: users[0].email}).exec())
+          .then(function(d) {
+            d.should.have.length(1)
+          })
         }).then(function() {
           done()
         }).catch(function(err) {
@@ -96,7 +111,7 @@ describe('<Unit Test>', function() {
         return Promise.resolve(_.range(numRepeat * 10))
         .map(function() {
           var user = genUser({email: users[0].email})
-          return Promise.cast(User.insert(user))
+          return User.insert(user)
           .then(function() {
             should.not.exist(true)
           }).catch(function(err) {
@@ -186,11 +201,19 @@ describe('<Unit Test>', function() {
 
       it('should set user avatar when url and userid are correct (setAvatarUrl)', function(done) {
         var user = savedusers[0]
-        var url = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_116x41dp.png'
-        return User.setAvatarUrl(user._id, url)
-        .then(function(d) {
+
+        return Promise.resolve()
+        .then(function() {
+          return Promise.cast(User.update({_id: user._id}, {image: null, thumb: null}).exec())
+        }).then(function() {
+          return User.setAvatarUrl(user._id, googleImgUrl)
+        }).then(function(d) {
+          should.exist(d.image)
+          should.exist(d.thumb)
+        }).then(function() {
           done()
         }).catch(function(err) {
+          console.log(err)
           should.not.exist(err)
           done()
         })
@@ -198,11 +221,20 @@ describe('<Unit Test>', function() {
 
       it('should set user avatar when local path and userid are correct (setAvatarPath)', function(done) {
         var user = savedusers[0]
-        var pa = path.join(config.root, 'packages/system/server/assets/google.jpg')
-        var pa2 = path.join(config.root, 'public/misc/google.jpg')
-        fs.copySync(pa, pa2)
-        return User.setAvatarPath(user._id, pa2)
+        var Uploadmanager = mongoose.model('Uploadmanager')
+
+        return Promise.resolve()
         .then(function() {
+          return Promise.cast(User.update({_id: user._id}, {image: null, thumb: null}).exec())
+        }).then(function() {
+          return Uploadmanager.UrlToImageFile(googleImgUrl)
+        }).then(function(d) {
+          console.log(d)
+          return User.setAvatarPath(user._id, d)
+        }).then(function(d) {
+          should.exist(d.image)
+          should.exist(d.thumb)
+        }).then(function() {
           done()
         }).catch(function(err) {
           console.log(err)
@@ -214,6 +246,7 @@ describe('<Unit Test>', function() {
       it('should fail on invalid reltive path (setAvatarPath)', function(done) {
         var user = savedusers[0]
         var pa2 = './../../public/misc/weirdavatar.jpg'
+
         return User.setAvatarPath(user._id, pa2)
         .catch(function(err) {
           should.exist(err)
@@ -335,6 +368,8 @@ describe('<Unit Test>', function() {
         .then(function(d) {
           d.should.have.length(0)
         })
+      }).then(function() {
+        del(['public/*.jpg']).then(function() {})
       }).then(function() {
         done()
       }).catch(function(err) {

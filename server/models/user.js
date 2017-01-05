@@ -10,7 +10,7 @@ var Schema = mongoose.Schema;
 var _ = require("lodash");
 var path = require("path");
 var fs = require("fs");
-var config = require("meanio").loadConfig();
+// var config = require("meanio").loadConfig();
 var userplugin = require("./../plugins/user");
 var validator = require("validator");
 

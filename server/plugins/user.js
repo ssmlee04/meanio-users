@@ -81,19 +81,18 @@ module.exports = exports = function lastModifiedPlugin (schema, options) {
     user.lat = user.lat || -90
     user.location = user.location || 'Antarctica'
     user.loc = [user.lon, user.lat]
-    var nickname = Moniker.choose() + '-' + Moniker.choose()
-    user.nickname = nickname.slice(nickname.indexOf('-') + 1)
+
     var base64img = user.base64img
     user.tags = user.tags || [{
       'name' : 'Chatting',
       '__v' : 0,
       'description' : {
-          'ar' : 'الدردشة',
-          'de' : 'Chat',
-          'zh-Hans' : '聊天',
-          'zh-Hant' : '聊天',
-          'ru' : 'Болтаем',
-          'es' : 'Chat'
+        'ar' : 'الدردشة',
+        'de' : 'Chat',
+        'zh-Hans' : '聊天',
+        'zh-Hant' : '聊天',
+        'ru' : 'Болтаем',
+        'es' : 'Chat'
       },
       'tag_id' : '57be29320371bf31285c39bc'
     }]
@@ -122,7 +121,6 @@ module.exports = exports = function lastModifiedPlugin (schema, options) {
     }).then(function(d) {
       var userId = this.user._id
       if (user.image && user.avatar) {
-
       } else if (process.env.NODE_ENV !== 'test' && base64img) {
         that.setAvatarBase64(userId, base64img)
       } else if (process.env.NODE_ENV !== 'test') {
@@ -182,13 +180,13 @@ module.exports = exports = function lastModifiedPlugin (schema, options) {
   }
 
   schema.statics.setAvatarUrl = function(id, url) {
-    url = url || 'http://www.gravatar.com/avatar/' + randomstring.generate() + '?d=identicon&s=384'
     var that = this
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return Promise.reject(new Error('not a valid user'))
     }
+    url = url || 'http://www.gravatar.com/avatar/' + randomstring.generate() + '?d=identicon&s=384'
     var Uploadmanager = mongoose.model('Uploadmanager')
-    var pa = path.join(config.root, uploadfolder, randomstring.generate() + '.jpg')
+    // var pa = path.join(config.root, uploadfolder, randomstring.generate() + '.jpg')
 
     return Promise.bind({})
     .then(function() {

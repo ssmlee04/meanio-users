@@ -6,12 +6,12 @@ var users = require("../controllers/users");
 var _ = require("lodash");
 var mongoose = require("mongoose");
 var config = require("meanio").loadConfig();
-var cors = require("cors");
-var corsOptions = {
-  allowedHeaders: "X-Requested-With",
-  origin: config.frontendServer,
-  credentials: true
-};
+// var cors = require("cors");
+// var corsOptions = {
+//   allowedHeaders: "X-Requested-With",
+//   origin: config.frontendServer,
+//   credentials: true
+// };
 
 module.exports = function(MeanUser, app, auth, database, passport) {
 
@@ -28,7 +28,8 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     .get(users.signout); 
 
   app.route("/apis/v1/auth/register")
-    .post(cors(corsOptions), users.create);
+    .post(users.create);
+    // .post(cors(corsOptions), users.create);
 
   app.route("/apis/v1/auth/forgot-password")
     .post(users.forgotpassword);
@@ -43,12 +44,14 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     .get(users.verifyEmailSalt);
   
   app.route("/apis/v1/auth/loggedin")
-    .get(cors(corsOptions), function(req, res) {
+    // .get(cors(corsOptions), function(req, res) {
+    .get(function(req, res) {
       res.send(req.isAuthenticated() ? req.user : "0");
     });
 
   app.route("/apis/v1/auth/login")
-    .post(cors(corsOptions), function(req, res, next) {
+    // .post(cors(corsOptions), function(req, res, next) {
+    .post(function(req, res, next) {
       passport.authenticate("user", {}, function(err, user, message) {
         if (err) {
           return res.json(500, {error: err.toString()});
@@ -70,7 +73,8 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     });
   
   app.route("/apis/v1/auth/facebook/token")
-    .post(cors(corsOptions), function(req, res, next) {
+    // .post(cors(corsOptions), function(req, res, next) {
+    .post(function(req, res, next) {
       passport.authenticate("facebook-token", {}, function(err, user, message) {
         if (err) {
           return res.json(500, {error: err.toString()});
@@ -91,7 +95,8 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     });
 
   app.route("/apis/v1/auth/google/token")
-    .post(cors(corsOptions), function(req, res, next) {
+    // .post(cors(corsOptions), function(req, res, next) {
+    .post(function(req, res, next) {
       passport.authenticate("google-token", {}, function(err, user, message) {
         if (err) {
           return res.json(500, {error: err.toString()});
@@ -121,7 +126,8 @@ module.exports = function(MeanUser, app, auth, database, passport) {
     }), users.signin);
 
   app.route("/apis/v1/auth/google/callback")
-    .get(cors(corsOptions), function(req, res, next) {
+    // .get(cors(corsOptions), function(req, res, next) {
+    .get(function(req, res, next) {
       passport.authenticate("google", {
         // failureRedirect: "/auth/login"
       }, function(err, user, message) {
