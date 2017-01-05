@@ -1,0 +1,166 @@
+#%RAML 0.8
+
+/google:
+  get:
+/google/callback:
+  get:
+    queryParameters: 
+      code: 
+/google/token:
+  description: Google authentication
+  post:
+    body:
+      application/json:
+        formParameters:
+          access_token:
+            description: Google access token
+            type: string
+          lon:
+            description: longitude, default to 121.6
+            type: number
+          lat:
+            description: longitude, default to 25.03
+            type: number
+/facebook/token:
+  description: Facebook authentication
+  post:
+    body:
+      application/json:
+        formParameters:
+          access_token:
+            description: Facebook access token
+            type: string
+          lon:
+            description: longitude, default to 121.6
+            type: number
+          lat:
+            description: longitude, default to 25.03
+            type: number
+/login:
+  description: authentication
+  post:
+    body:
+      application/json:
+        formParameters:
+          email:
+            description: Email of the login user
+            type: string
+            minLength: 5
+            example: "email@gmail.com"
+          password:
+            description: Password of the login user
+            type: string
+            minLength: 8
+            example: "password"
+    responses:
+      200:
+        body:
+          application/json:
+            schema: user
+      500: 
+        body: 
+          application/json:
+            example: | 
+              {
+                "error": "Unknown user, please check your email or password"
+              }
+/register:
+  description: Register an account
+  post:
+    body:
+      application/json:
+        formParameters:
+          email:
+            description: Email of the login user
+            type: string
+            minLength: 5
+            example: "email@gmail.com"
+          password:
+            description: Password of the login user
+            type: string
+            minLength: 8
+            example: "password"
+          name:
+            description: Name of the login user
+            type: string
+            minLength: 3
+            example: "G.I. Joe"
+          lon:
+            description: Longitude of the user
+            type: number
+            example: 121.6
+          lat:
+            description: Latitude of the user
+            type: number
+            example: 25.03
+    responses:
+      200:
+        body:
+          application/json:
+            schema: user
+      500: 
+        body: 
+          application/json:
+            example: | 
+              {
+                "error": "username will have 5-40 characters.."
+              }
+/forgot-password:
+  description: Forget password
+  post:
+    body:
+      application/json:
+        formParameters:
+          text:
+            description: Email or Username of the login user
+            type: string
+    responses:
+      200:
+        body:
+          application/json:
+            example: | 
+              {
+                "message": "Mail successfully sent",
+                "status": "success"
+              }
+/reset/{token}:
+  description: Reset password by token
+  post:
+    body:
+      application/json:
+        formParameters:
+          password:
+            description: New password of the login user
+            type: string
+            minLength: 8
+          confirmPassword:
+            description: New password of confirmation the login user
+            type: string
+            minLength: 8
+/loggedin:
+  description: check login status
+  get:
+    queryParameters: 
+      access_token: 
+    responses:
+      200:
+        body:
+          application/json:
+            schema: user
+/logout:
+  description: Logout user profile
+  get:
+    responses:
+      200:
+        body:
+          application/json:
+            example: | 
+              {
+                "sucess": "signout success"
+              }
+/verifyemail/{emailToken}:
+  description: Verify your account by token 
+  get:
+/resendconfirmation:
+  description: Resend E-mail confirmation code
+  post:
